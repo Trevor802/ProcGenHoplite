@@ -3,22 +3,51 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 
+[InitializeOnLoad]
 public class RoomConstructor : MonoBehaviour {
     [SerializeField] private GameObject[] m_prefabs = new GameObject[4];
     [SerializeField] private GameObject[] m_sockets = new GameObject[16];
 
+    private static GameObject m_prefab;
+    private static string m_prefabPath;
+
+    static RoomConstructor(){
+        // PrefabStage.prefabSaved += OnPrefabSaved;
+        PrefabStage.prefabStageOpened += OnPrefabStageOpened;
+        // PrefabUtility.prefabInstanceUpdated += OnPrefabSaved;
+    }
+
+    static void OnPrefabStageOpened(PrefabStage stage){
+        if (stage.stageHandle.FindComponentOfType<RoomConstructor>()){
+            m_prefab = stage.prefabContentsRoot;
+            m_prefabPath = stage.prefabAssetPath;
+        }
+    }
+
+    static void OnPrefabSaved(GameObject prefab){
+        m_prefab = prefab;
+    }
+
     public void Construct(){
-        // var prefab = PrefabUtility.GetCorrespondingObjectFromSource(gameObject);
-        int id = Convert.ToInt32(name, 16);
+        Debug.Assert(name.Length == 8);
         for(int i = 0; i < 8; i++){
-            var tile = id % 4;
+            var tile = (int)Char.GetNumericValue(name, 8-i-1);
             var prefab = m_prefabs[tile];
             for (int j = 0; j < 2; j++) {
                 ReplaceTile(i * 2 + j, prefab);
             }
-            id /= 4;
         }
+    }
+
+    public void RenameToQuaternary(){
+        Debug.Assert(name.Length == 4);
+        var n = Convert.ToUInt16(name, 16);
+        var newName = n.ToQuat();
+        var oldName = name;
+        name = newName;
+        AssetDatabase.RenameAsset(m_prefabPath, newName);
     }
 
     private void ReplaceTile(int id, GameObject prefab) {
