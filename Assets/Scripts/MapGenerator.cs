@@ -1,16 +1,24 @@
 ﻿using System;
+using Random = System.Random;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class MapGenerator : MonoBehaviour
 {
 	private const string m_startID = "00000100";
+	public int RandSeed;
 	private Queue<Room> m_queue = new Queue<Room>();
 	// private HashSet<int> m_used = new HashSet<int>();
 	private Dictionary<int, bool> m_used = new Dictionary<int, bool>();
 	private Dictionary<int, Room> m_record = new Dictionary<int, Room>();
+	private Random m_random;
 	private void Start() {
+		if (RandSeed == 0){
+			RandSeed = new Random().Next();
+		}
+		m_random = new Random(RandSeed);
 		// var loc = new Location(Vector3.zero, Quaternion.identity);
 		Populate(null);
 	}
@@ -18,7 +26,7 @@ public class MapGenerator : MonoBehaviour
 	private void Populate(Room baseRoom){
 		var locs = baseRoom is null ? new Location(Vector3.zero, Quaternion.identity).GetLocations() : baseRoom.Loc.GetLocations();
 		for(int i = 0; i < 4; i++){
-			var id = GetAvailRoomID(baseRoom, Direction.Front);
+			var id = GetAvailRoomID(baseRoom, Direction.Base);
 			var r = GenRoom(locs[i], id);
 			var hash = locs[i].ToHash(false);
 			if (m_used.ContainsKey(hash)){
@@ -44,8 +52,11 @@ public class MapGenerator : MonoBehaviour
 		if (room is null){
 			return m_startID;
 		}
-		var sot = room.GetSockets(d);
-		return m_startID;
+		// var mask = room.GetMask(d);
+		var availRooms = RoomPool.All;
+		var rand = m_random.Next(availRooms.Length);
+		var id = availRooms[rand];
+		return id;
 	}
 
 	private bool CanGen(Location location){
@@ -91,5 +102,20 @@ public class RoomPool{
 			m_pool[id] = obj;
 		}
 		return m_pool[id];
+	}
+
+	private static string[] m_allRooms;
+	public static string[] All{
+		get{
+			if (m_allRooms is null){
+				var data = AssetDatabase.FindAssets("t:prefab", new[] {Define.ROOM_PATH});
+				var result = new string[data.Length];
+				for(int i = 0; i < data.Length; i++){
+					result[i] = AssetDatabase.GUIDToAssetPath(data[i]).Substring(Define.ROOM_PATH.Length+1, 8);
+				}
+				m_allRooms = result;
+			}
+			return m_allRooms;
+		}
 	}
 }

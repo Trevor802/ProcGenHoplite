@@ -3,6 +3,7 @@ public static class Define{
     public const int ROOM_RAD = 4;
     public const int MAP_SIZE = 1024;
     public const int MAP_SIZE_SQUARE = MAP_SIZE * MAP_SIZE;
+    public const string ROOM_PATH = "Assets/Prefabs/Resources/Rooms";
 }
 
 public struct Location{
@@ -15,6 +16,7 @@ public struct Location{
 }
 
 public enum Direction{
+    Base    = 0,
 	Front 	= 1,
 	Left 	= 2,
 	Right 	= 3

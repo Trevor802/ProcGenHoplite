@@ -7,9 +7,10 @@ public class Room : MonoBehaviour
     public string ID{get; set;} = "00000000";
     public Location Loc{get; set;}
 
-    public string GetSockets(Direction direction){
+    public string GetMask(Direction direction){
         var result = "";
         switch (direction){
+            case Direction.Base:
             case Direction.Front:
                 result += ID[0] + ID[7];
                 break;
