@@ -9,16 +9,18 @@ public class MapGenerator : MonoBehaviour
 	private Queue<Room> m_queue = new Queue<Room>();
 	// private HashSet<int> m_used = new HashSet<int>();
 	private Dictionary<int, bool> m_used = new Dictionary<int, bool>();
+	private Dictionary<int, Room> m_record = new Dictionary<int, Room>();
 	private void Start() {
-		var loc = new Location(Vector3.zero, Quaternion.identity);
-		Populate(loc);
+		// var loc = new Location(Vector3.zero, Quaternion.identity);
+		Populate(null);
 	}
 
-	private void Populate(Location loc){
-		var locs = loc.GetLocations();
+	private void Populate(Room baseRoom){
+		var locs = baseRoom is null ? new Location(Vector3.zero, Quaternion.identity).GetLocations() : baseRoom.Loc.GetLocations();
 		for(int i = 0; i < 4; i++){
-			var r = GenRoom(locs[i], m_startID);
-			var hash = locs[i].ToHash();
+			var id = GetAvailRoomID(baseRoom, Direction.Front);
+			var r = GenRoom(locs[i], id);
+			var hash = locs[i].ToHash(false);
 			if (m_used.ContainsKey(hash)){
 				m_used[hash] = true;
 			}
@@ -28,19 +30,34 @@ public class MapGenerator : MonoBehaviour
 			if (i > 0){
 				m_queue.Enqueue(r);
 			}
+			var _1 = locs[i].ToHash(true);
+			try{
+				m_record.Add(locs[i].ToHash(true), r);
+			}
+			catch(Exception e){
+				throw e;
+			}
 		}
+	}
+
+	private string GetAvailRoomID(Room room, Direction d){
+		if (room is null){
+			return m_startID;
+		}
+		var sot = room.GetSockets(d);
+		return m_startID;
 	}
 
 	private bool CanGen(Location location){
 		if (location.Pos.x >= -0.1f && location.Pos.z <= 0.1f){
 			return false;
 		}
-		var hash = location.ToHash();
+		var hash = location.ToHash(false);
 		return !m_used.ContainsKey(hash) || !m_used[hash];
 	}
 
 	private void Update() {
-		if (Input.GetKeyDown(KeyCode.N)){
+		if (Input.GetKey(KeyCode.N)){
 			Next();
 		}
 	}
@@ -48,7 +65,7 @@ public class MapGenerator : MonoBehaviour
 	private void Next(){
 		var room = m_queue.Dequeue();
 		if (CanGen(room.Loc)){
-			Populate(room.Loc);
+			Populate(room);
 		}
 	}
 
@@ -62,14 +79,6 @@ public class MapGenerator : MonoBehaviour
 	}
 }
 
-public struct Location{
-	public Location(Vector3 p, Quaternion r){
-		Pos = p;
-		Rot = r;
-	}
-	public Vector3 			Pos;
-	public Quaternion 		Rot;
-}
 public class RoomPool{
 	private static Dictionary<string, GameObject> m_pool = new Dictionary<string, GameObject>();
 

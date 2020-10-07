@@ -39,9 +39,29 @@ public static class Util{
 		return points;
 	}
 
-    public static int ToHash(this Location location){
+    public static int ToHash(this Location location, bool withRot){
         var x = Mathf.RoundToInt(location.Pos.x);
         var z = Mathf.RoundToInt(location.Pos.z);
-        return x * Define.MAP_SIZE + z;
+        var result = x * Define.MAP_SIZE + z;
+        if (withRot){
+            result += (int)location.Rot.ToOrientation() * Define.MAP_SIZE_SQUARE;
+        }
+        return result;
+    }
+
+    public static Orientation ToOrientation(this Quaternion rotation){
+        if (Quaternion.Angle(rotation, Quaternion.identity) < 0.5f){
+            return Orientation.North;
+        }
+        if (Quaternion.Angle(rotation, Quaternion.Euler(0, -90f, 0)) < 0.5f){
+            return Orientation.West;
+        }
+        if (Quaternion.Angle(rotation, Quaternion.Euler(0, 90f, 0)) < 0.5f){
+            return Orientation.East;
+        }
+        if (Quaternion.Angle(rotation, Quaternion.Euler(0, 180f, 0)) < 0.5f){
+            return Orientation.South;
+        }
+        throw new System.InvalidOperationException("Invalid angle");
     }
 }
