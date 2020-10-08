@@ -44,7 +44,7 @@ public class RoomConstructor : MonoBehaviour {
     public void RenameToQuaternary(){
         Debug.Assert(name.Length == 4);
         var n = Convert.ToUInt16(name, 16);
-        var newName = n.ToQuat();
+        var newName = n.ToQuatStr();
         var oldName = name;
         name = newName;
         AssetDatabase.RenameAsset(m_prefabPath, newName);

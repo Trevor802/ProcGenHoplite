@@ -1,13 +1,64 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 public static class Util{
-    public static string ToQuat(this ushort value, int length = 8){
+    public static string ToQuatStr(this ushort value, int length = 8){
         var sb = new System.Text.StringBuilder();
         while(length-- > 0){
             var n = value % 4;
             sb.Insert(0, n);
-            value /= 4;
+            value >>= 2;
         }
         string result = sb.ToString();
+        return result;
+    }
+    public static string ToQuatStr(this int[] array, int length = 8){
+        var sb = new System.Text.StringBuilder();
+        while(length-- > 0){
+            sb.Append(array[length]);
+        }
+        string result = sb.ToString();
+        return result;
+    }
+
+    public static int[] ToQuatArray(this ushort value, int length = 8){
+        var array = new int[length];
+        var index = 0;
+        while(index < length){
+            var n = value % 4;
+            array[index++] = n;
+            value >>= 2;
+        }
+        return array;
+    }
+
+    public static int[] ToQuatArray(this string value, int length = 8){
+        var array = new int[length];
+        var index = 0;
+        while(length-- > 0){
+            array[index++] = Convert.ToInt32(value.Substring(length, 1));
+        }
+        return array;
+    }
+
+    public static ushort Encode(this int[] array, int length = 8){
+        ushort result = 0;
+        while(length-- > 0){
+            result <<= 2;
+            result += (ushort)array[length];
+        }
+        return result;
+    }
+
+    public static ushort Encode(this string id, int length = 8){
+        Debug.Assert(id.Length == length);
+        ushort result = 0;
+        var index = 0;
+        while(index < length){
+            var n = Convert.ToUInt16(id.Substring(index, 1));
+            result <<= 2;
+            result += n;
+            index++;
+        }
         return result;
     }
 
@@ -15,27 +66,12 @@ public static class Util{
 		var points = new Location[4];
 		points[0].Pos = point.Pos + point.Rot * new Vector3(-1, 0, 1) * Define.ROOM_RAD;
 		points[0].Rot = point.Rot;
-		// var _0 = new Location{
-		// 	Pos = point.Pos + point.Rot * new Vector3(-1, 0, 1), 
-		// 	Rot = point.Rot
-		// };
 		points[1].Pos = point.Pos + point.Rot * new Vector3(-2, 0, 2) * Define.ROOM_RAD;
 		points[1].Rot = point.Rot;
 		points[2].Pos = point.Pos + point.Rot * new Vector3(-2, 0, -2) * Define.ROOM_RAD;
 		points[2].Rot = point.Rot * Quaternion.Euler(0, -90, 0); 
-		// var _1 = new Location{ 
-		// 	Pos = point.Pos + point.Rot * new Vector3(3, 0, 1),
-		// 	Rot = point.Rot * Quaternion.Euler(0, -90, 0)
-		// };
 		points[3].Pos = point.Pos + point.Rot * new Vector3(2, 0, 2) * Define.ROOM_RAD;
 		points[3].Rot = point.Rot * Quaternion.Euler(0, 90, 0); 
-		// var _2 = new Location{
-		// 	Pos = point.Pos + point.Rot * new Vector3(-1, 0, -3),
-		// 	Rot = point.Rot * Quaternion.Euler(0, 90, 0)
-		// };
-		// points[0] = _0;
-		// points[1] = _1;
-		// points[2] = _2;
 		return points;
 	}
 
