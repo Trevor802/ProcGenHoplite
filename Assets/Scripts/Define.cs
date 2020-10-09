@@ -5,6 +5,7 @@ public static class Define{
     public const int MAP_SIZE_SQUARE = MAP_SIZE * MAP_SIZE;
     public const string ROOM_PATH = "Assets/Prefabs/Resources/Rooms";
 	public const string NULL_ROOM = "00000000";
+	public static readonly int[] NULL_ID = {-1, -1, -1, -1, -1, -1, -1, -1};
 }
 
 public struct Location{
@@ -28,4 +29,10 @@ public enum Orientation{
 	East 	= 1,
 	South 	= 2,
 	West 	= 3
+}
+public enum TileType : byte{
+	Wall    = 0,
+	Door    = 1,
+	Floor   = 2,
+	Lava    = 3,
 }

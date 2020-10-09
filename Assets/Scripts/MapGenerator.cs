@@ -26,26 +26,33 @@ public class MapGenerator : MonoBehaviour
 		Populate(null);
 	}
 
-	private void Populate(Room baseRoom, bool genNullRoom = false){
+	private void Populate(Room baseRoom){
 		var locs = baseRoom is null ? new Location(Vector3.zero, Quaternion.identity).GetLocations() : baseRoom.Loc.GetLocations();
+		var lucky = false;
 		for(int i = 0; i < 4; i++){
-			ushort id = 0;
-			if (!genNullRoom){
-				id = GetAvailRoomID(locs[i], (Direction)i);
+			lucky |= m_random.Next() % 9 == 0;
+			Room r = null;
+			if (!lucky){
+				ushort id = 0;
+				ushort mask = 0;
+				mask = GenMask(locs[i], (Direction)i);
+				id = SelectRoom(mask);
+				r = GenRoom(locs[i], id, mask);
+				if (i > 0){
+					m_queue.Enqueue(r);
+				}
 			}
-			// if (id == 0){
-			// 	continue;
-			// }
-			var r = GenRoom(locs[i], id);
+			else{
+				r = new Room();
+				r.Loc = locs[i];
+				r.ID = Define.NULL_ID;
+			}
 			var hash = locs[i].ToHash(false);
 			if (m_used.ContainsKey(hash)){
 				m_used[hash] = true;
 			}
 			else{
 				m_used.Add(hash, false);
-			}
-			if (i > 0 && !genNullRoom){
-				m_queue.Enqueue(r);
 			}
 			m_record.Add(locs[i].ToHash(true), r);
 			m_countRoom++;
@@ -63,9 +70,12 @@ public class MapGenerator : MonoBehaviour
 		return result;
 	}
 
-	private ushort GetAvailRoomID(Location loc, Direction d){
+	private ushort GenMask(Location loc, Direction d){
 		// Gen mask
-		var mask = Enumerable.Repeat(-1, 8).ToArray();
+		var mask = new int[8];
+		for(int i = 0; i < 8; i++){
+			mask[i] = m_random.Next() % 2;
+		}
 		var lHash = 0;
 		var rHash = 0;
 		var cHash = 0;
@@ -76,9 +86,6 @@ public class MapGenerator : MonoBehaviour
 			if (m_record.ContainsKey(bHash)){
 				mask[4] = m_record[bHash].ID[7];
 				mask[3] = m_record[bHash].ID[0];
-			}
-			else{
-				return m_startID.Encode();
 			}
 		}
 		else if(d == Direction.Left){
@@ -168,8 +175,10 @@ public class MapGenerator : MonoBehaviour
 				}
 			}
 		}
-		// Choose rooms based on mask
-		var availRooms = RoomPool.All.ApplyMask(mask);
+		return mask.Encode();
+	}
+	public ushort SelectRoom(ushort mask){
+		var availRooms = RoomPool.All;
 		if (availRooms.Length == 0){
 			Debug.LogWarning($"No room available for mask {mask.ToQuatStr()}");
 			return Define.NULL_ROOM.Encode();
@@ -208,7 +217,7 @@ public class MapGenerator : MonoBehaviour
 
 	private void NextSurround(){
 		var room = m_queue.Dequeue();
-		Populate(room, true);
+		Populate(room);
 	}
 
 	private void Next(){
@@ -218,12 +227,13 @@ public class MapGenerator : MonoBehaviour
 		}
 	}
 
-	private Room GenRoom(Location location, ushort id){
+	private Room GenRoom(Location location, ushort id, ushort mask){
 		var prefab = RoomPool.LoadRoom(id.ToQuatArray());
 		var obj = Instantiate<GameObject>(prefab, location.Pos, location.Rot);
-		var room = obj.GetComponent<Room>();
-		room.ID = id.ToQuatArray();
+		var room = obj.GetComponent<RoomConstructor>().RoomData;
+		room.ID = mask.ToQuatArray();
 		room.Loc = location;
+		room.Constructor?.ConstructRunTime(room.ID);
 		return room;
 	}
 }

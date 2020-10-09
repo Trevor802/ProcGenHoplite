@@ -13,6 +13,10 @@ public class RoomConstructor : MonoBehaviour {
     private static GameObject m_prefab;
     private static string m_prefabPath;
 
+    public Room RoomData;
+    private void Awake() {
+        RoomData = new Room();
+    }
     static RoomConstructor(){
         // PrefabStage.prefabSaved += OnPrefabSaved;
         PrefabStage.prefabStageOpened += OnPrefabStageOpened;
@@ -28,6 +32,25 @@ public class RoomConstructor : MonoBehaviour {
 
     static void OnPrefabSaved(GameObject prefab){
         m_prefab = prefab;
+    }
+
+    public void ConstructRunTime(int[] id){
+        Debug.Assert(id.Length == 8);
+        for(int i = 0; i < 8; i++){
+            var prefab = m_prefabs[id[i]];
+            for(int j = 0; j < 2; j++){
+                var index = i * 2 + j;
+                var oldObj = m_sockets[index];
+                var newObj = Instantiate<GameObject>(prefab);
+                newObj.transform.parent = oldObj.transform.parent;
+                newObj.transform.localPosition = oldObj.transform.localPosition;
+                newObj.transform.localRotation = oldObj.transform.localRotation;
+                newObj.transform.localScale = oldObj.transform.localScale;
+                newObj.transform.SetSiblingIndex(oldObj.transform.GetSiblingIndex());
+                Destroy(m_sockets[index]);
+                m_sockets[index] = newObj;
+            }
+        }
     }
 
     public void Construct(){

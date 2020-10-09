@@ -166,7 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RandSeed: 1234
   Surround: 0
-  NumRoom: 123
+  NumRoom: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
