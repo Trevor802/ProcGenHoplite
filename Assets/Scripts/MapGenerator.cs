@@ -10,6 +10,7 @@ public class MapGenerator : MonoBehaviour
 {
 	private const string m_startID = "01000000";
 	public int RandSeed;
+	public bool Surround = false;
 	public int NumRoom = 10;
 	private int m_countRoom = 0;
 	private Queue<Room> m_queue = new Queue<Room>();
@@ -25,10 +26,13 @@ public class MapGenerator : MonoBehaviour
 		Populate(null);
 	}
 
-	private void Populate(Room baseRoom){
+	private void Populate(Room baseRoom, bool genNullRoom = false){
 		var locs = baseRoom is null ? new Location(Vector3.zero, Quaternion.identity).GetLocations() : baseRoom.Loc.GetLocations();
 		for(int i = 0; i < 4; i++){
-			var id = GetAvailRoomID(locs[i], (Direction)i);
+			ushort id = 0;
+			if (!genNullRoom){
+				id = GetAvailRoomID(locs[i], (Direction)i);
+			}
 			// if (id == 0){
 			// 	continue;
 			// }
@@ -40,7 +44,7 @@ public class MapGenerator : MonoBehaviour
 			else{
 				m_used.Add(hash, false);
 			}
-			if (i > 0){
+			if (i > 0 && !genNullRoom){
 				m_queue.Enqueue(r);
 			}
 			m_record.Add(locs[i].ToHash(true), r);
@@ -196,7 +200,15 @@ public class MapGenerator : MonoBehaviour
 			if (m_countRoom < NumRoom){
 				Next();
 			}
+			else if (Surround){
+				NextSurround();
+			}
 		}
+	}
+
+	private void NextSurround(){
+		var room = m_queue.Dequeue();
+		Populate(room, true);
 	}
 
 	private void Next(){
