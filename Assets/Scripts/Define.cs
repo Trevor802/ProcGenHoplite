@@ -16,10 +16,10 @@ public struct Location{
 }
 
 public enum Direction{
-    Base    = 0,
-	Front 	= 1,
-	Left 	= 2,
-	Right 	= 3
+    Center    = 0,
+	Left 	= 1,
+	Right 	= 2,
+	Front 	= 3
 }
 
 public enum Orientation{

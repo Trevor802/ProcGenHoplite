@@ -64,16 +64,64 @@ public static class Util{
 
     public static Location[] GetLocations(this Location point){
 		var points = new Location[4];
-		points[0].Pos = point.Pos + point.Rot * new Vector3(-1, 0, 1) * Define.ROOM_RAD;
-		points[0].Rot = point.Rot;
-		points[1].Pos = point.Pos + point.Rot * new Vector3(-2, 0, 2) * Define.ROOM_RAD;
-		points[1].Rot = point.Rot;
-		points[2].Pos = point.Pos + point.Rot * new Vector3(-2, 0, -2) * Define.ROOM_RAD;
-		points[2].Rot = point.Rot * Quaternion.Euler(0, -90, 0); 
-		points[3].Pos = point.Pos + point.Rot * new Vector3(2, 0, 2) * Define.ROOM_RAD;
-		points[3].Rot = point.Rot * Quaternion.Euler(0, 90, 0); 
+		points[(int)Direction.Center].Pos = point.Pos + point.Rot * new Vector3(-1, 0, 1) * Define.ROOM_RAD;
+		points[(int)Direction.Center].Rot = point.Rot;
+		points[(int)Direction.Front].Pos = point.Pos + point.Rot * new Vector3(-2, 0, 2) * Define.ROOM_RAD;
+		points[(int)Direction.Front].Rot = point.Rot;
+		points[(int)Direction.Left].Pos = point.Pos + point.Rot * new Vector3(-2, 0, -2) * Define.ROOM_RAD;
+		points[(int)Direction.Left].Rot = point.Rot * Quaternion.Euler(0, -90, 0); 
+		points[(int)Direction.Right].Pos = point.Pos + point.Rot * new Vector3(2, 0, 2) * Define.ROOM_RAD;
+		points[(int)Direction.Right].Rot = point.Rot * Quaternion.Euler(0, 90, 0); 
 		return points;
 	}
+
+    public static Location GetLocationByDir(this Location baseLoc, Direction dir){
+        var pos = Vector3.zero;
+        var rot = Quaternion.identity;
+        switch(dir){
+            case Direction.Center:
+                rot = baseLoc.Rot;
+                pos = baseLoc.Pos + baseLoc.Rot * new Vector3(-1, 0, 1) * Define.ROOM_RAD;
+                break;
+            case Direction.Front:
+                rot = baseLoc.Rot;
+                pos = baseLoc.Pos + baseLoc.Rot * new Vector3(-2, 0, 2) * Define.ROOM_RAD;
+                break;
+            case Direction.Left:
+                rot = baseLoc.Rot * Quaternion.Euler(0, -90, 0);
+                pos = baseLoc.Pos + baseLoc.Rot * new Vector3(-2, 0, -2) * Define.ROOM_RAD;
+                break;
+            case Direction.Right:
+                rot = baseLoc.Rot * Quaternion.Euler(0, 90, 0);
+                pos = baseLoc.Pos + baseLoc.Rot * new Vector3(2, 0, 2) * Define.ROOM_RAD;
+                break;
+        }
+        return new Location(pos, rot); 
+    }
+
+    public static Location GetBaseLocation(this Location loc, Direction dir){
+        var pos = Vector3.zero;
+        var rot = Quaternion.identity;
+        switch(dir){
+            case Direction.Center:
+                rot = loc.Rot;
+                pos = loc.Pos - rot * new Vector3(-1, 0, 1) * Define.ROOM_RAD;
+                break;
+            case Direction.Front:
+                rot = loc.Rot;
+                pos = loc.Pos - rot * new Vector3(-2, 0, 2) * Define.ROOM_RAD;
+                break;
+            case Direction.Left:
+                rot = loc.Rot * Quaternion.Euler(0, 90, 0);
+                pos = loc.Pos - rot * new Vector3(-2, 0, -2) * Define.ROOM_RAD;
+                break;
+            case Direction.Right:
+                rot = loc.Rot * Quaternion.Euler(0, -90, 0);
+                pos = loc.Pos - rot * new Vector3(2, 0, 2) * Define.ROOM_RAD;
+                break;
+        }
+        return new Location(pos, rot);
+    }
 
     public static int ToHash(this Location location, bool withRot){
         var x = Mathf.RoundToInt(location.Pos.x);
@@ -83,6 +131,12 @@ public static class Util{
             result += (int)location.Rot.ToOrientation() * Define.MAP_SIZE_SQUARE;
         }
         return result;
+    }
+
+    public static int ToHash(this Location location, Orientation orientation){
+        var hash = location.ToHash(false);
+        hash += (int)orientation * Define.MAP_SIZE_SQUARE;
+        return hash;
     }
 
     public static Orientation ToOrientation(this Quaternion rotation){
@@ -99,5 +153,17 @@ public static class Util{
             return Orientation.South;
         }
         throw new System.InvalidOperationException("Invalid angle");
+    }
+
+    public static Orientation Rotate(this Orientation orientation, Direction direction){
+        var add = 0;
+        if (direction == Direction.Left){
+            add = -1;
+        }
+        else if (direction == Direction.Right){
+            add = 1;
+        }
+        var result = ((int)orientation + add + 4) % 4;
+        return (Orientation)result;
     }
 }

@@ -11,11 +11,11 @@ public class RoomConstructorEditor : Editor {
             var constructor = (RoomConstructor)target;
             constructor.Construct();
         }
-        if (GUILayout.Button("Hex to Quat")){
-            var constructor = (RoomConstructor)target;
-            constructor.RenameToQuaternary();
-            constructor.Construct();
-        }
+        // if (GUILayout.Button("Hex to Quat")){
+        //     var constructor = (RoomConstructor)target;
+        //     constructor.RenameToQuaternary();
+        //     constructor.Construct();
+        // }
 
     }
 } 

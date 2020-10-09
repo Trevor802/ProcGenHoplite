@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Random = System.Random;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using UnityEditor;
 
 public class MapGenerator : MonoBehaviour
 {
-	private const string m_startID = "00000100";
+	private const string m_startID = "01000000";
 	public int RandSeed;
 	private Queue<Room> m_queue = new Queue<Room>();
 	// private HashSet<int> m_used = new HashSet<int>();
@@ -26,7 +27,7 @@ public class MapGenerator : MonoBehaviour
 	private void Populate(Room baseRoom){
 		var locs = baseRoom is null ? new Location(Vector3.zero, Quaternion.identity).GetLocations() : baseRoom.Loc.GetLocations();
 		for(int i = 0; i < 4; i++){
-			var id = GetAvailRoomID(baseRoom, (Direction)i);
+			var id = GetAvailRoomID(locs[i], (Direction)i);
 			var r = GenRoom(locs[i], id);
 			var hash = locs[i].ToHash(false);
 			if (m_used.ContainsKey(hash)){
@@ -38,17 +39,99 @@ public class MapGenerator : MonoBehaviour
 			if (i > 0){
 				m_queue.Enqueue(r);
 			}
-			var _1 = locs[i].ToHash(true);
 			m_record.Add(locs[i].ToHash(true), r);
 		}
 	}
 
-	private ushort GetAvailRoomID(Room room, Direction d){
-		if (room is null){
-			return m_startID.Encode();
+	private List<Room> RoomsAtPos(Location loc){
+		var result = new List<Room>();
+		for(int i = 0; i < 4; i++){
+			var hash = loc.ToHash((Orientation)i);
+			if (m_record.ContainsKey(hash)){
+				result.Add(m_record[hash]);
+			}
 		}
-		var mask = room.GetMask(d);
+		return result;
+	}
+
+	private ushort GetAvailRoomID(Location loc, Direction d){
+		// Gen mask
+		var mask = Enumerable.Repeat(-1, 8).ToArray();
+		var lHash = 0;
+		var rHash = 0;
+		var cHash = 0;
+		var bLoc = loc.GetBaseLocation(d);
+		var bHash = bLoc.ToHash(true);
+		var orient = loc.Rot.ToOrientation();
+		if (d == Direction.Center){
+			if (m_record.ContainsKey(bHash)){
+				mask[4] = m_record[bHash].ID[7];
+				mask[3] = m_record[bHash].ID[0];
+			}
+			else{
+				return m_startID.Encode();
+			}
+		}
+		else if(d == Direction.Left){
+			lHash = loc.ToHash(orient.Rotate(Direction.Left));
+			if (m_record.ContainsKey(lHash)){
+				mask[0] = m_record[lHash].ID[7];
+				mask[1] = m_record[lHash].ID[6];
+			}
+			rHash = loc.ToHash(orient.Rotate(Direction.Right));
+			if (m_record.ContainsKey(rHash)){
+				mask[7] = m_record[rHash].ID[0];
+				mask[6] = m_record[rHash].ID[1];
+			}
+			if (m_record.ContainsKey(bHash)){
+				mask[5] = m_record[bHash].ID[6];
+			}
+			cHash = bLoc.GetLocationByDir(Direction.Center).ToHash(true);
+			if (m_record.ContainsKey(cHash)){
+				mask[3] = m_record[cHash].ID[6];
+				mask[4] = m_record[cHash].ID[5];
+			}
+		}
+		else if(d == Direction.Right){
+			lHash = loc.ToHash(orient.Rotate(Direction.Left));
+			if (m_record.ContainsKey(lHash)){
+				mask[0] = m_record[lHash].ID[7];
+				mask[1] = m_record[lHash].ID[6];
+			}
+			rHash = loc.ToHash(orient.Rotate(Direction.Right));
+			if (m_record.ContainsKey(rHash)){
+				mask[7] = m_record[rHash].ID[0];
+				mask[6] = m_record[rHash].ID[1];
+			}
+			if (m_record.ContainsKey(bHash)){
+				mask[2] = m_record[bHash].ID[1];
+			}
+			cHash = bLoc.GetLocationByDir(Direction.Center).ToHash(true);
+			if (m_record.ContainsKey(cHash)){
+				mask[3] = m_record[cHash].ID[2];
+				mask[4] = m_record[cHash].ID[1];
+			}
+		}
+		else if(d == Direction.Front){
+			lHash = bLoc.GetLocationByDir(Direction.Left).ToHash(true);
+			rHash = bLoc.GetLocationByDir(Direction.Right).ToHash(true);
+			cHash = bLoc.GetLocationByDir(Direction.Center).ToHash(true);
+			if (m_record.ContainsKey(lHash)){
+				mask[5] = m_record[lHash].ID[2];
+			}
+			if (m_record.ContainsKey(cHash)){
+				mask[4] = m_record[cHash].ID[7];
+				mask[3] = m_record[cHash].ID[0];
+			}
+			if (m_record.ContainsKey(rHash)){
+				mask[2] = m_record[rHash].ID[5];
+			}
+		}
+		// Choose rooms based on mask
 		var availRooms = RoomPool.All.ApplyMask(mask);
+		if (availRooms.Length == 0){
+			throw new InvalidOperationException($"No room available for mask {mask.ToQuatStr()}");
+		}
 		var rand = m_random.Next(availRooms.Length);
 		var id = availRooms[rand];
 		return id.Encode();
@@ -64,6 +147,9 @@ public class MapGenerator : MonoBehaviour
 
 	private void Update() {
 		if (Input.GetKey(KeyCode.N)){
+			Next();
+		}
+		if (Input.GetKeyDown(KeyCode.Space)){
 			Next();
 		}
 	}
@@ -113,7 +199,7 @@ public static class RoomPool{
 		Debug.Assert(source.Length == 8);
 		Debug.Assert(mask.Length == 8);
 		for(int i = 0; i < 8; i++){
-			if (source[i] != mask[i] && mask[i] != -1){
+			if (source[i] != mask[i] && mask[i] != -1 && (source[i] == 0 || mask[i] == 0)){
 				return false;
 			}
 		}
