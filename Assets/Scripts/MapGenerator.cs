@@ -22,7 +22,6 @@ public class MapGenerator : MonoBehaviour
 			RandSeed = new Random().Next();
 		}
 		m_random = new Random(RandSeed);
-		// var loc = new Location(Vector3.zero, Quaternion.identity);
 		Populate(null);
 	}
 
@@ -84,13 +83,24 @@ public class MapGenerator : MonoBehaviour
 				mask[0] = m_record[lHash].ID[7];
 				mask[1] = m_record[lHash].ID[6];
 			}
+			else if(loc.IsAtLimbo()){
+				mask[0] = 0;
+				mask[1] = 0;
+			}
 			rHash = loc.ToHash(orient.Rotate(Direction.Right));
 			if (m_record.ContainsKey(rHash)){
 				mask[7] = m_record[rHash].ID[0];
 				mask[6] = m_record[rHash].ID[1];
 			}
+			else if(loc.IsAtLimbo()){
+				mask[7] = 0;
+				mask[6] = 0;
+			}
 			if (m_record.ContainsKey(bHash)){
 				mask[5] = m_record[bHash].ID[6];
+			}
+			else if(bLoc.IsAtLimbo()){
+				mask[5] = 0;
 			}
 			cHash = bLoc.GetLocationByDir(Direction.Center).ToHash(true);
 			if (m_record.ContainsKey(cHash)){
@@ -104,13 +114,24 @@ public class MapGenerator : MonoBehaviour
 				mask[0] = m_record[lHash].ID[7];
 				mask[1] = m_record[lHash].ID[6];
 			}
+			else if(loc.IsAtLimbo()){
+				mask[0] = 0;
+				mask[1] = 0;
+			}
 			rHash = loc.ToHash(orient.Rotate(Direction.Right));
 			if (m_record.ContainsKey(rHash)){
 				mask[7] = m_record[rHash].ID[0];
 				mask[6] = m_record[rHash].ID[1];
 			}
+			else if(loc.IsAtLimbo()){
+				mask[7] = 0;
+				mask[6] = 0;
+			}
 			if (m_record.ContainsKey(bHash)){
 				mask[2] = m_record[bHash].ID[1];
+			}
+			else if(bLoc.IsAtLimbo()){
+				mask[2] = 0;
 			}
 			cHash = bLoc.GetLocationByDir(Direction.Center).ToHash(true);
 			if (m_record.ContainsKey(cHash)){
@@ -131,6 +152,16 @@ public class MapGenerator : MonoBehaviour
 			}
 			if (m_record.ContainsKey(rHash)){
 				mask[2] = m_record[rHash].ID[5];
+			}
+			if (loc.IsAtLimbo()){
+				if (loc.Pos.x >= -0.1f){
+					mask[7] = 0;
+					mask[6] = 0;
+				}
+				else{
+					mask[0] = 0;
+					mask[1] = 0;
+				}
 			}
 		}
 		// Choose rooms based on mask

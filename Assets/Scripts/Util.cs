@@ -139,6 +139,13 @@ public static class Util{
         return hash;
     }
 
+    public static bool IsAtLimbo(this Location location){
+        if (location.Pos.x >= -0.1f && location.Pos.z <= 0.1f){
+			return true;
+        }
+        return false;
+    }
+
     public static Orientation ToOrientation(this Quaternion rotation){
         if (Quaternion.Angle(rotation, Quaternion.identity) < 0.5f){
             return Orientation.North;
