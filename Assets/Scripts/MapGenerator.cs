@@ -10,6 +10,8 @@ public class MapGenerator : MonoBehaviour
 {
 	private const string m_startID = "01000000";
 	public int RandSeed;
+	public int NumRoom = 10;
+	private int m_countRoom = 0;
 	private Queue<Room> m_queue = new Queue<Room>();
 	// private HashSet<int> m_used = new HashSet<int>();
 	private Dictionary<int, bool> m_used = new Dictionary<int, bool>();
@@ -28,6 +30,9 @@ public class MapGenerator : MonoBehaviour
 		var locs = baseRoom is null ? new Location(Vector3.zero, Quaternion.identity).GetLocations() : baseRoom.Loc.GetLocations();
 		for(int i = 0; i < 4; i++){
 			var id = GetAvailRoomID(locs[i], (Direction)i);
+			// if (id == 0){
+			// 	continue;
+			// }
 			var r = GenRoom(locs[i], id);
 			var hash = locs[i].ToHash(false);
 			if (m_used.ContainsKey(hash)){
@@ -40,6 +45,7 @@ public class MapGenerator : MonoBehaviour
 				m_queue.Enqueue(r);
 			}
 			m_record.Add(locs[i].ToHash(true), r);
+			m_countRoom++;
 		}
 	}
 
@@ -130,7 +136,8 @@ public class MapGenerator : MonoBehaviour
 		// Choose rooms based on mask
 		var availRooms = RoomPool.All.ApplyMask(mask);
 		if (availRooms.Length == 0){
-			throw new InvalidOperationException($"No room available for mask {mask.ToQuatStr()}");
+			Debug.LogWarning($"No room available for mask {mask.ToQuatStr()}");
+			return Define.NULL_ROOM.Encode();
 		}
 		var rand = m_random.Next(availRooms.Length);
 		var id = availRooms[rand];
@@ -146,11 +153,18 @@ public class MapGenerator : MonoBehaviour
 	}
 
 	private void Update() {
-		if (Input.GetKey(KeyCode.N)){
-			Next();
+		if (NumRoom == 0){
+			if (Input.GetKey(KeyCode.N)){
+				Next();
+			}
+			if (Input.GetKeyDown(KeyCode.Space)){
+				Next();
+			}
 		}
-		if (Input.GetKeyDown(KeyCode.Space)){
-			Next();
+		else{
+			if (m_countRoom < NumRoom){
+				Next();
+			}
 		}
 	}
 

@@ -4,6 +4,7 @@ public static class Define{
     public const int MAP_SIZE = 1024;
     public const int MAP_SIZE_SQUARE = MAP_SIZE * MAP_SIZE;
     public const string ROOM_PATH = "Assets/Prefabs/Resources/Rooms";
+	public const string NULL_ROOM = "00000000";
 }
 
 public struct Location{
