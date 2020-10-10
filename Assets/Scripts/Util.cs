@@ -140,7 +140,7 @@ public static class Util{
     }
 
     public static bool IsAtLimbo(this Location location){
-        if (location.Pos.x >= -0.1f && location.Pos.z <= 0.1f){
+        if (location.Pos.x >= -Define.LIMBO_CHECK && location.Pos.z <= Define.LIMBO_CHECK){
 			return true;
         }
         return false;

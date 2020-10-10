@@ -16,6 +16,7 @@ public class RoomConstructor : MonoBehaviour {
     public Room RoomData;
     private void Awake() {
         RoomData = new Room();
+        RoomData.Constructor = this;
     }
     static RoomConstructor(){
         // PrefabStage.prefabSaved += OnPrefabSaved;
@@ -86,5 +87,12 @@ public class RoomConstructor : MonoBehaviour {
         // -- now delete the old prefab
         Undo.DestroyObjectImmediate(oldObject);
         m_sockets[id] = newObject;
+    }
+
+    public void ShowVictory(){
+        for(int i = 0; i < 8; i++){
+            RoomData.ID[i] = 0;
+        }
+        ConstructRunTime(RoomData.ID);
     }
 }

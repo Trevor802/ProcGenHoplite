@@ -6,6 +6,7 @@ public static class Define{
     public const string ROOM_PATH = "Assets/Prefabs/Resources/Rooms";
 	public const string NULL_ROOM = "00000000";
 	public static readonly int[] NULL_ID = {-1, -1, -1, -1, -1, -1, -1, -1};
+	public const float LIMBO_CHECK = 0.5f;
 }
 
 public struct Location{

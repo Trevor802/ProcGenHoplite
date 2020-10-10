@@ -10,8 +10,8 @@ public class MapGenerator : MonoBehaviour
 {
 	private const string m_startID = "01000000";
 	public int RandSeed;
-	public bool Surround = false;
 	public int NumRoom = 10;
+	public int NumRoomTillVictory = 10;
 	private int m_countRoom = 0;
 	private Queue<Room> m_queue = new Queue<Room>();
 	// private HashSet<int> m_used = new HashSet<int>();
@@ -30,7 +30,7 @@ public class MapGenerator : MonoBehaviour
 		var locs = baseRoom is null ? new Location(Vector3.zero, Quaternion.identity).GetLocations() : baseRoom.Loc.GetLocations();
 		var lucky = false;
 		for(int i = 0; i < 4; i++){
-			lucky |= m_random.Next() % 9 == 0;
+			lucky |= m_random.Next() % 20 == 0;
 			Room r = null;
 			if (!lucky){
 				ushort id = 0;
@@ -40,6 +40,10 @@ public class MapGenerator : MonoBehaviour
 				r = GenRoom(locs[i], id, mask);
 				if (i > 0){
 					m_queue.Enqueue(r);
+				}
+				m_countRoom++;
+				if (m_countRoom == NumRoomTillVictory){
+					r.Constructor.ShowVictory();
 				}
 			}
 			else{
@@ -55,7 +59,6 @@ public class MapGenerator : MonoBehaviour
 				m_used.Add(hash, false);
 			}
 			m_record.Add(locs[i].ToHash(true), r);
-			m_countRoom++;
 		}
 	}
 
@@ -71,10 +74,13 @@ public class MapGenerator : MonoBehaviour
 	}
 
 	private ushort GenMask(Location loc, Direction d){
+		if (m_countRoom == 0){
+			return m_startID.Encode();
+		}
 		// Gen mask
 		var mask = new int[8];
 		for(int i = 0; i < 8; i++){
-			mask[i] = m_random.Next() % 2;
+			mask[i] = m_random.Next() % 3;
 		}
 		var lHash = 0;
 		var rHash = 0;
@@ -165,13 +171,13 @@ public class MapGenerator : MonoBehaviour
 				mask[2] = m_record[rHash].ID[5];
 			}
 			if (loc.IsAtLimbo()){
-				if (loc.Pos.x >= -0.1f){
-					mask[7] = 0;
-					mask[6] = 0;
-				}
-				else{
+				if (orient == Orientation.East || orient == Orientation.South){
 					mask[0] = 0;
 					mask[1] = 0;
+				}
+				else{
+					mask[7] = 0;
+					mask[6] = 0;
 				}
 			}
 		}
@@ -209,9 +215,6 @@ public class MapGenerator : MonoBehaviour
 			if (m_countRoom < NumRoom){
 				Next();
 			}
-			else if (Surround){
-				NextSurround();
-			}
 		}
 	}
 
@@ -221,15 +224,18 @@ public class MapGenerator : MonoBehaviour
 	}
 
 	private void Next(){
-		var room = m_queue.Dequeue();
-		if (CanGen(room.Loc)){
-			Populate(room);
+		if (m_queue.Count > 0){
+			var room = m_queue.Dequeue();
+			if (CanGen(room.Loc)){
+				Populate(room);
+			}
 		}
 	}
 
 	private Room GenRoom(Location location, ushort id, ushort mask){
 		var prefab = RoomPool.LoadRoom(id.ToQuatArray());
 		var obj = Instantiate<GameObject>(prefab, location.Pos, location.Rot);
+		obj.name = m_countRoom.ToString();
 		var room = obj.GetComponent<RoomConstructor>().RoomData;
 		room.ID = mask.ToQuatArray();
 		room.Loc = location;

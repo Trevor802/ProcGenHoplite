@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: 5743225157867408052, guid: ed3827d256c694cbb8335cc4757b4713,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5743225158511467207, guid: ed3827d256c694cbb8335cc4757b4713,
         type: 3}
@@ -75,7 +75,7 @@ PrefabInstance:
     - target: {fileID: 5743225158511467256, guid: ed3827d256c694cbb8335cc4757b4713,
         type: 3}
       propertyPath: m_Name
-      value: Wall
+      value: Win
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed3827d256c694cbb8335cc4757b4713, type: 3}
