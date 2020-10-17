@@ -166,8 +166,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SeedUI: {fileID: 1553996285}
   MapFileList:
-  - {fileID: 4900000, guid: 63ba3f324389c4c94bae9b6c1251fbd3, type: 3}
-  - {fileID: 4900000, guid: d2d3378a6cc714787bbbba4eb12fa4d4, type: 3}
+  - {fileID: 4900000, guid: bca6ac6b91ab04e64bf2efb22bf7a296, type: 3}
+  - {fileID: 4900000, guid: 426a3360c4d0643e5b89dd028c7e741b, type: 3}
   - {fileID: 4900000, guid: cb0a15dbe13494c669459b5a788ebdcf, type: 3}
   - {fileID: 4900000, guid: 896f5b3b343334e0095a46a609166d1b, type: 3}
   - {fileID: 4900000, guid: 8f2d4acc3074346d4be049768f7466bc, type: 3}
@@ -195,8 +195,12 @@ MonoBehaviour:
     Tile: {fileID: 4644833093375791729, guid: 2e258c480c4314860b47d9b7c0c1584c, type: 3}
   - C: 78
     Tile: {fileID: 4644833093375791729, guid: 2e258c480c4314860b47d9b7c0c1584c, type: 3}
+  - C: 60
+    Tile: {fileID: 4644833093375791729, guid: 3c7dfea3574d446f4ae5005aca01402e, type: 3}
+  - C: 62
+    Tile: {fileID: 4644833093375791729, guid: bb1a16098ecc44d1fa312dd7c7086665, type: 3}
   RandomSeed: 0
-  RoomsToVictory: 10
+  RoomsToVictory: 8
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -366,7 +370,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.7069834, y: 0, z: 0, w: 0.7072302}
-  m_LocalPosition: {x: 0, y: 100, z: -0}
+  m_LocalPosition: {x: 40, y: 80, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

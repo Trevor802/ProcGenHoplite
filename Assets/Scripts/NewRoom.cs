@@ -22,11 +22,11 @@ public class NewRoom : MonoBehaviour
                     local = EDoor.transform.localPosition;
                 break;
             case Orientation.South:
-                if (SDoor)
+                if (NDoor)
                     local = NDoor.transform.localPosition;
                 break;
             case Orientation.North:
-                if (NDoor)
+                if (SDoor)
                     local = SDoor.transform.localPosition;
                 break;
         }

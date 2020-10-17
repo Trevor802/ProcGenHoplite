@@ -49,9 +49,6 @@ public class RoomGenerator : MonoBehaviour
 	}
 
 	private void Update() {
-		// if (Input.GetKeyDown(KeyCode.Space)){
-		// 	Next();
-		// }
 		if (m_generating){
 			if (m_count < RoomsToVictory){
 				Next();
@@ -182,8 +179,8 @@ public class RoomGenerator : MonoBehaviour
 	}
 
 	public void ParseStr(string roomStr, string name){
-		var addDoor = !name.Contains("A") && !name.Contains("Z");
-		var obj = new GameObject($"Room{m_count}");
+		var addDoor = !name.Contains("Start") && !name.Contains("End");
+		var obj = new GameObject($"Room_{name}");
 		var room = obj.AddComponent<NewRoom>();
 		if (!addDoor){
 			m_oRooms.Add(room);
