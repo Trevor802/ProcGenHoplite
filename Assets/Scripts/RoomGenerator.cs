@@ -23,14 +23,14 @@ public class RoomGenerator : MonoBehaviour
 	public int RoomsToVictory = 10;
 	private int m_count;
 	private bool m_generating = false;
-	private List<NewRoom> m_wRooms = new List<NewRoom>();
-	private List<NewRoom> m_eRooms = new List<NewRoom>();
-	private List<NewRoom> m_nRooms = new List<NewRoom>();
-	private List<NewRoom> m_sRooms = new List<NewRoom>();
-	private List<NewRoom> m_oRooms = new List<NewRoom>();
+	private List<Room> m_wRooms = new List<Room>();
+	private List<Room> m_eRooms = new List<Room>();
+	private List<Room> m_nRooms = new List<Room>();
+	private List<Room> m_sRooms = new List<Room>();
+	private List<Room> m_oRooms = new List<Room>();
 	private Stack<Door> m_doors = new Stack<Door>();
 	// private Queue<Door> m_doors = new Queue<Door>();
-	private List<NewRoom> m_realRooms = new List<NewRoom>();
+	private List<Room> m_realRooms = new List<Room>();
 	void Start()
 	{
 		map = new Dictionary<char, GameObject>();
@@ -64,10 +64,11 @@ public class RoomGenerator : MonoBehaviour
 		foreach(var r in m_realRooms){
 			r.CleanUnconnectedDoors();
 		}
+		FindObjectOfType<UnitGenerator>().Generate(m_realRooms);
 	}
 
 	private void Next(){
-		NewRoom room = null;
+		Room room = null;
 		Vector3 pos;
 		bool first = m_doors.Count == 0;
 		var o = Orientation.North;
@@ -87,7 +88,7 @@ public class RoomGenerator : MonoBehaviour
 			room = m_oRooms[0];
 			pos = Vector3.zero;
 		}
-		var newRoom = Instantiate<GameObject>(room.gameObject, pos, Quaternion.identity).GetComponent<NewRoom>();
+		var newRoom = Instantiate<GameObject>(room.gameObject, pos, Quaternion.identity).GetComponent<Room>();
 		newRoom.gameObject.SetActive(true);
 		if (first)
 			PushDoors(newRoom);
@@ -97,7 +98,7 @@ public class RoomGenerator : MonoBehaviour
 		m_count++;
 	}
 
-	private void PushDoors(NewRoom room){
+	private void PushDoors(Room room){
 		var list = new List<Door>();
 			if (room.NDoor){
 				list.Add(room.NDoor);
@@ -117,7 +118,7 @@ public class RoomGenerator : MonoBehaviour
 			}	
 	}
 
-	private void PushDoors(NewRoom room, Orientation orientation){
+	private void PushDoors(Room room, Orientation orientation){
 		var list = new List<Door>();
 		if (room.NDoor){
 			if (orientation == Orientation.South){
@@ -157,8 +158,8 @@ public class RoomGenerator : MonoBehaviour
 		}
 	}
 
-	private NewRoom FindRoom(Orientation orientation){
-		List<NewRoom> list = null;
+	private Room FindRoom(Orientation orientation){
+		List<Room> list = null;
 		switch(orientation){
 			case Orientation.South:
 				list = m_nRooms;
@@ -181,7 +182,7 @@ public class RoomGenerator : MonoBehaviour
 	public void ParseStr(string roomStr, string name){
 		var addDoor = !name.Contains("Start") && !name.Contains("End");
 		var obj = new GameObject($"Room_{name}");
-		var room = obj.AddComponent<NewRoom>();
+		var room = obj.AddComponent<Room>();
 		if (!addDoor){
 			m_oRooms.Add(room);
 		}

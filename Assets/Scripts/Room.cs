@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewRoom : MonoBehaviour
+public class Room : MonoBehaviour
 {
     public Door NDoor;
     public Door SDoor;
     public Door WDoor;
     public Door EDoor;
     public GameObject WallPrefab;
-
     public Vector3 FindRoomPos(Orientation orientation, Vector3 targetPos){
         Vector3 local = Vector3.zero;
         switch(orientation){
@@ -91,5 +90,9 @@ public class NewRoom : MonoBehaviour
         if (EDoor && !EDoor.Connected){
             ReplaceDoorWithWall(Orientation.East, WallPrefab);
         }
+    }
+
+    public void GenerateUnits(int depth){
+        
     }
 }
