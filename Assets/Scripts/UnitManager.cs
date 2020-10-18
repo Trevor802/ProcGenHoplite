@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class UnitManager : MonoBehaviour {
     private List<Unit> m_units = new List<Unit>();
+    public bool IsPlayerTurn => true;
     private bool m_isPlayerTurn;
     private int m_count;
     private Player m_player;
@@ -24,7 +25,7 @@ public class UnitManager : MonoBehaviour {
         m_isPlayerTurn = false;
         m_count = 0;
         foreach(var u in m_units){
-            u.TakeAction(Callback);
+            u.TakeAction(null, Callback);
         }
     }
     public void Callback(){
@@ -36,5 +37,8 @@ public class UnitManager : MonoBehaviour {
     private void AfterCallback(){
         m_count = 0;
         m_isPlayerTurn = true;
+    }
+    public void AfterPlayerTurn(){
+        m_isPlayerTurn = false;
     }
 }

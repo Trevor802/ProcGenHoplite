@@ -6,13 +6,17 @@ using Random = UnityEngine.Random;
 
 public class Unit : MonoBehaviour
 {
+    protected UnitManager m_uManager;
     public float MoveSpeed = 10f;
     private Action m_callback;
     private List<IUnitAction> m_actions = new List<IUnitAction>();
-    private IUnitAction m_nullAction = new INullAction();
-    private void Awake() {
-        m_actions.Add(new IMoveAction());
-        m_actions.Add(new IAttackAction());
+    protected IUnitAction m_nullAction = new INullAction();
+    protected IMoveAction m_moveAction = new IMoveAction();
+    protected IAttackAction m_attackAction = new IAttackAction();
+    protected virtual void Awake() {
+        m_uManager = FindObjectOfType<UnitManager>();
+        m_actions.Add(m_moveAction);
+        m_actions.Add(m_attackAction);
     }
     public IUnitAction GetRandActins(Unit unit){
         var actions = new List<IUnitAction>();
@@ -25,26 +29,7 @@ public class Unit : MonoBehaviour
         int id = Random.Range(0, actions.Count);
         return actions[id];
     }
-    internal virtual void TakeAction(Action callback){}
-    protected IEnumerator MoveTo(Tile tile){
-        transform.LookAt(tile.transform.position, Vector3.up);
-        yield return MoveFromTo(transform, transform.position, tile.transform.position, MoveSpeed);
-        m_callback?.Invoke();
-    }
-    protected IEnumerator Attack(Unit unit){
-        yield return null;
-        m_callback?.Invoke();
-    }
-
-    protected IEnumerator Push(Unit unit){
-        yield return null;
-        m_callback?.Invoke();
-    }
-
-    protected IEnumerator Throw(Unit unit){
-        yield return null;
-        m_callback?.Invoke();
-    }
+    internal virtual void TakeAction(IUnitAction actionToTake, Action callback){}
     private IEnumerator MoveFromTo(Transform objectToMove, Vector3 a, Vector3 b, float speed){
         float step = (speed / (a - b).magnitude) * Time.fixedDeltaTime;
         float t = 0;

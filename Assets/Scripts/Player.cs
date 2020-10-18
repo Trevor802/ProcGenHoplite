@@ -1,18 +1,26 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : Unit
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public static Player Instance {get; private set;}
+    protected override void Awake() {
+        base.Awake();
+        Instance = this;
     }
-
-    // Update is called once per frame
-    void Update()
+    internal override void TakeAction(IUnitAction actionToTake, Action callback)
     {
-        
+        base.TakeAction(actionToTake, callback);
+    }
+    public bool MoveTo(Tile tile){
+        if (m_moveAction.CanAct(this)){
+            StartCoroutine(
+                m_moveAction.Act(transform, transform.position, tile.transform.position, MoveSpeed, m_uManager.AfterPlayerTurn)
+            );
+            return true;
+        }
+        return false;
     }
 }

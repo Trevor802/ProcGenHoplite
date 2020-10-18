@@ -4,17 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 public interface IUnitAction{
     bool CanAct(Unit unit);
-    IEnumerator Act(List<object> parameters, Action callback);
+    // IEnumerator Act(List<object> parameters, Action callback);
 }
 
-class IMoveAction : IUnitAction
+public class IMoveAction : IUnitAction
 {
-    public IEnumerator Act(List<object> parameters, Action callback)
+    public IEnumerator Act(Transform objectToMove, Vector3 a, Vector3 b, float speed, Action callback)
     {
-        var objectToMove = (Transform)parameters[0];
-        var a = (Vector3)parameters[1];
-        var b = (Vector3)parameters[2];
-        var speed = (float)parameters[3];
+        objectToMove.LookAt(b, Vector3.up);
         float step = (speed / (a - b).magnitude) * Time.fixedDeltaTime;
         float t = 0;
         while (t <= 1.0f) {
@@ -29,7 +26,7 @@ class IMoveAction : IUnitAction
     public bool CanAct(Unit unit)
     {
         if (unit is Player player){
-
+            return true;
         }
         else if (unit is Enemy enemy){
 
@@ -38,7 +35,7 @@ class IMoveAction : IUnitAction
     }
 }
 
-class IAttackAction : IUnitAction
+public class IAttackAction : IUnitAction
 {
     public IEnumerator Act(List<object> parameters, Action callback)
     {
