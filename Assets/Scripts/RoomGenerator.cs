@@ -38,7 +38,7 @@ public class RoomGenerator : MonoBehaviour
 			map.Add(p.C, p.Tile);
 		}
 		if (RandomSeed == 0){
-			RandomSeed = Mathf.RoundToInt(Random.value);
+			RandomSeed = Random.Range(0, int.MaxValue);
 		}
 		// m_rand = new Random(RandomSeed);
 		Random.InitState(RandomSeed);

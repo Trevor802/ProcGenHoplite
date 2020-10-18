@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,13 @@ public class Room : MonoBehaviour
     public Door SDoor;
     public Door WDoor;
     public Door EDoor;
+    private List<Tile> m_floors = new List<Tile>();
+    private List<Unit> m_enemies = new List<Unit>();
+    private UnitGenerator m_uGen;
+    public void SetupTile(){
+        m_floors.AddRange(GetComponentsInChildren<Tile>().Where(x => x.tag == "Floor"));
+        m_uGen = FindObjectOfType<UnitGenerator>();
+    }
     public GameObject WallPrefab;
     public Vector3 FindRoomPos(Orientation orientation, Vector3 targetPos){
         Vector3 local = Vector3.zero;
@@ -94,6 +102,13 @@ public class Room : MonoBehaviour
 
     public void GenerateUnits(int depth){
         SetCamera();
+        SetupTile();
+        var list = m_floors.OrderBy(x => Random.Range(0, int.MaxValue)).Take(depth);
+        foreach(var f in list){
+            var prefab = Random.Range(0, 2) == 0 ? m_uGen.WarriorPrefab : m_uGen.ArcherPrefab;
+            var enemy = Instantiate(prefab, f.transform.position, Quaternion.identity);
+            m_enemies.Add(enemy);
+        }
     }
 
     public void SetCamera(){

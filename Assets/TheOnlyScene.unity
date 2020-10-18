@@ -423,6 +423,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 8148327685881036428, guid: 0985cc8db1853490cb5e2c2583167786,
     type: 3}
+  WarriorPrefab: {fileID: -8709302805908739264, guid: 46109d6496bf44507897629083030a94,
+    type: 3}
+  ArcherPrefab: {fileID: -2691992083263135057, guid: 63cd6f9eb116244c993cb32d12c8196a,
+    type: 3}
 --- !u!1 &1540240788
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,23 +2,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Unit : MonoBehaviour
 {
     public float MoveSpeed = 10f;
     private Action m_callback;
     private List<IUnitAction> m_actions = new List<IUnitAction>();
+    private IUnitAction m_nullAction = new INullAction();
     private void Awake() {
         m_actions.Add(new IMoveAction());
         m_actions.Add(new IAttackAction());
     }
-    // public IUnitAction GetRandActins(Unit unit){
-    //     var actions = new List<IUnitAction>();
-    //     foreach(var a in m_actions){
-    //         if (a.CanAct(unit))
-    //             actions.Add(a);
-    //     }
-    // }
+    public IUnitAction GetRandActins(Unit unit){
+        var actions = new List<IUnitAction>();
+        foreach(var a in m_actions){
+            if (a.CanAct(unit))
+                actions.Add(a);
+        }
+        if (actions.Count == 0)
+            return m_nullAction;
+        int id = Random.Range(0, actions.Count);
+        return actions[id];
+    }
     internal virtual void TakeAction(Action callback){}
     protected IEnumerator MoveTo(Tile tile){
         transform.LookAt(tile.transform.position, Vector3.up);

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-interface IUnitAction{
+public interface IUnitAction{
     bool CanAct(Unit unit);
     IEnumerator Act(List<object> parameters, Action callback);
 }
@@ -55,5 +55,19 @@ class IAttackAction : IUnitAction
 
         }
         return false;
+    }
+}
+
+class INullAction : IUnitAction
+{
+    public IEnumerator Act(List<object> parameters, Action callback)
+    {
+        yield return null;
+        callback?.Invoke();
+    }
+
+    public bool CanAct(Unit unit)
+    {
+        return true;
     }
 }

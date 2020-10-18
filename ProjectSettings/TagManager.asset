@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Start
   - End
+  - Floor
   layers:
   - Default
   - TransparentFX
