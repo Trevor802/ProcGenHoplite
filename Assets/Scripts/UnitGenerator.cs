@@ -9,8 +9,6 @@ public class UnitGenerator : MonoBehaviour {
         var start = GameObject.FindWithTag("Start");
         var player = Instantiate<GameObject>(PlayerPrefab.gameObject, start.transform.position, Quaternion.identity);
         int depth = 0;
-        foreach(var room in rooms){
-            room.GenerateUnits(depth++);
-        }
+        rooms[0].GenerateUnits(depth);
     }
 }

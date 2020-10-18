@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine.UI;
 using System;
-using Random = System.Random;
+using Random = UnityEngine.Random;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +19,7 @@ public class RoomGenerator : MonoBehaviour
 	private Dictionary<char, GameObject> map;
 	private Vector3 m_currentPos;
 	public int RandomSeed = 0;
-	private Random m_rand;
+	// private Random m_rand;
 	public int RoomsToVictory = 10;
 	private int m_count;
 	private bool m_generating = false;
@@ -38,9 +38,10 @@ public class RoomGenerator : MonoBehaviour
 			map.Add(p.C, p.Tile);
 		}
 		if (RandomSeed == 0){
-			RandomSeed = new Random().Next();
+			RandomSeed = Mathf.RoundToInt(Random.value);
 		}
-		m_rand = new Random(RandomSeed);
+		// m_rand = new Random(RandomSeed);
+		Random.InitState(RandomSeed);
 		SeedUI.text = $"Seed:{RandomSeed.ToString()}";
 		foreach(var file in MapFileList){
 			ParseStr(file.text, file.name);
@@ -112,7 +113,7 @@ public class RoomGenerator : MonoBehaviour
 			if (room.EDoor){
 				list.Add(room.EDoor);
 			}
-			list.Shuffle(m_rand);
+			list.Shuffle();
 			foreach(var d in list){
 				m_doors.Push(d);
 			}	
@@ -152,7 +153,7 @@ public class RoomGenerator : MonoBehaviour
 				list.Add(room.EDoor);
 			}
 		}
-		list.Shuffle(m_rand);
+		list.Shuffle();
 		foreach(var d in list){
 			m_doors.Push(d);
 		}
@@ -174,7 +175,7 @@ public class RoomGenerator : MonoBehaviour
 				list = m_eRooms;
 				break;
 		}
-		var index = m_rand.Next(list.Count);
+		var index = Random.Range(0, list.Count);
 		var room = list[index];
 		return room;
 	}

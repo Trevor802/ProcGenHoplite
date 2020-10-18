@@ -93,6 +93,13 @@ public class Room : MonoBehaviour
     }
 
     public void GenerateUnits(int depth){
-        
+        SetCamera();
+    }
+
+    public void SetCamera(){
+        var pos = Camera.main.transform.position;
+        pos.x = transform.position.x + 4f;
+        pos.z = transform.position.z - 4f;
+        Camera.main.transform.position = pos;
     }
 }
