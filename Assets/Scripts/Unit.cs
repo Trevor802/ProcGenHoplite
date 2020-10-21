@@ -4,33 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class Unit : MonoBehaviour
+public abstract class Unit : MonoBehaviour
 {
-    protected UnitManager m_uManager;
     public float MoveSpeed = 10f;
     private Action m_callback;
-    private List<IUnitAction> m_actions = new List<IUnitAction>();
-    protected IUnitAction m_nullAction = new INullAction();
-    protected IMoveAction m_moveAction = new IMoveAction();
-    protected IAttackAction m_attackAction = new IAttackAction();
     protected virtual void Awake() {
-        m_uManager = FindObjectOfType<UnitManager>();
-        m_actions.Add(m_moveAction);
-        m_actions.Add(m_attackAction);
     }
-    public IUnitAction GetRandActins(Unit unit){
-        var actions = new List<IUnitAction>();
-        foreach(var a in m_actions){
-            if (a.CanAct(unit))
-                actions.Add(a);
-        }
-        if (actions.Count == 0)
-            return m_nullAction;
-        int id = Random.Range(0, actions.Count);
-        return actions[id];
-    }
-    internal virtual void TakeAction(IUnitAction actionToTake, Action callback){}
-    private IEnumerator MoveFromTo(Transform objectToMove, Vector3 a, Vector3 b, float speed){
+    internal abstract void TakeAction(Action callback);
+
+    protected IEnumerator Move(Transform objectToMove, Vector3 a, Vector3 b, float speed, Action callback)
+    {
+        objectToMove.LookAt(b, Vector3.up);
         float step = (speed / (a - b).magnitude) * Time.fixedDeltaTime;
         float t = 0;
         while (t <= 1.0f) {
@@ -39,5 +23,11 @@ public class Unit : MonoBehaviour
             yield return new WaitForFixedUpdate();         // Leave the routine and return here in the next frame
         }
         objectToMove.position = b;
+        callback();
+    }
+
+    protected IEnumerator Attack(Tile tile, Action callback){
+        yield return null;
+        callback();
     }
 }

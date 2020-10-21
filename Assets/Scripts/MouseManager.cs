@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +8,11 @@ public class MouseManager : MonoBehaviour
     public LayerMask TileMask;
     private Tile m_hovering;
     private UnitManager m_uManager;
+    public Action<Tile> OnClickTile;
+    public static MouseManager Instance {get; private set;} = null;
     void Awake(){
         m_uManager = FindObjectOfType<UnitManager>();
+        Instance = this;
     }
 
     void Update()
@@ -21,9 +25,7 @@ public class MouseManager : MonoBehaviour
             m_hovering?.OnHover();
         }
         if (Input.GetMouseButtonDown(0)){
-            if (m_uManager.IsPlayerTurn){
-                Player.Instance.MoveTo(m_hovering);
-            }
+            OnClickTile.Invoke(m_hovering);
         }
     }
 }
