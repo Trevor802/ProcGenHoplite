@@ -6,6 +6,9 @@ using Random = UnityEngine.Random;
 
 public abstract class Unit : MonoBehaviour
 {
+    protected static int FindPlayerMask ;
+    protected static int BlockMask ;
+    protected static  int TileMask ;
     public float MoveSpeed = 10f;
     private Action m_callback;
     protected virtual void Awake() {
@@ -29,5 +32,14 @@ public abstract class Unit : MonoBehaviour
     protected IEnumerator Attack(Tile tile, Action callback){
         yield return null;
         callback();
+    }
+
+    public Tile In(){
+        RaycastHit hit;
+        Tile tile = null;
+        if (Physics.Raycast(transform.position + Vector3.up, Vector3.down, out hit, float.MaxValue, TileMask)){
+            tile = hit.collider.GetComponent<Tile>();
+        }
+        return tile;
     }
 }

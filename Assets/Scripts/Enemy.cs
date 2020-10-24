@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Enemy : Unit
 {
-    private static int FindPlayerMask ;
-    private static int BlockMask ;
-    private static  int TileMask ;
     private bool m_canSeePlayer;
     private Tile m_nextTile;
     private bool m_canAttackPlayer;
@@ -25,9 +22,13 @@ public class Enemy : Unit
         TrackPlayer();
         if (m_canAttackPlayer){
             // attack first
+            Debug.Log("Attack");
+            callback();
         }
         else if (m_canThrowPlayer){
             // throw
+            Debug.Log("Throw");
+            callback();
         }
         else if (m_canSeePlayer){
             StartCoroutine(Move(transform, transform.position, m_nextTile.transform.position, MoveSpeed, callback));
@@ -66,16 +67,30 @@ public class Enemy : Unit
         return null;
     }
 
+    private void ClearFlags(){
+        m_canSeePlayer = false;
+        m_canAttackPlayer = false;
+        m_canThrowPlayer = false;
+        m_nextTile = null; 
+    }
+
     protected void TrackPlayer(){
+        ClearFlags();
         var direction = Player.Instance.transform.position - transform.position;
         if (Physics.Linecast(transform.position, Player.Instance.transform.position, BlockMask)){
-            m_canSeePlayer = false;
-            m_canAttackPlayer = false;
-            m_canThrowPlayer = false;
-            m_nextTile = null;
+            return;
         }
         else{
             m_canSeePlayer = true;
+            if (!direction.IsDiag()){
+                var dist = Vector3.Distance(In().transform.position, Player.Instance.In().transform.position);
+                if (Util.NrE(dist, 2)){
+                    m_canThrowPlayer = true;
+                }
+                else if (Util.NrE(dist, 1)){
+                    m_canAttackPlayer = true;
+                }
+            }
             var dirs = direction.Split();
             m_nextTile = GetAvailTile(dirs);
         }
