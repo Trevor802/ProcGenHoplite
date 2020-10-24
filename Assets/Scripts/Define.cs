@@ -9,7 +9,6 @@ public static class DEF{
 	public const float LIMBO_CHECK = 0.5f;
 	public const int ATK_DIST = 1;
 	public const int TRW_DIST_MIN = 2;
-	public const int TRW_DIST_MAX = 3;
 	public const int PSH_WAL_DMG = 1;
 	public const int PSH_MANA = 3;
 }

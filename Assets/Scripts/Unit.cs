@@ -53,6 +53,7 @@ public abstract class Unit : MonoBehaviour
         tile.GetUnit().Damage(1);
         transform.LookAt(tile.transform.position, Vector3.up);
         yield return null;
+        ParticleManager.Instance.PlayParticle(tile.transform.position, tile.transform.position - transform.position, ParticleManager.Instance.AttackP);
         callback();
     }
 
@@ -61,6 +62,7 @@ public abstract class Unit : MonoBehaviour
         tile.GetUnit().Damage(1);
         transform.LookAt(tile.transform.position, Vector3.up);
         yield return null;
+        ParticleManager.Instance.PlayParticle(transform.position, tile.transform.position - transform.position, ParticleManager.Instance.ThrowP);
         callback();
     }
 

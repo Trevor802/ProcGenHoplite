@@ -114,7 +114,8 @@ public class Player : Unit
         var unit = tile.GetUnit();
         if (unit != null && 
             unit is Enemy &&
-            m_mana >= DEF.PSH_MANA){
+            m_mana >= DEF.PSH_MANA &&
+            Input.GetKey(KeyCode.Space)){
             return true;
         }
         return false;
@@ -166,8 +167,10 @@ public class Player : Unit
     protected override IEnumerator Throw(Tile tile, Action callback)
     {
         Debug.Log($"{name} throw {tile.GetUnit().name}");
+        transform.LookAt(tile.transform.position);
         Spear.transform.parent = tile.transform;
         yield return Move(Spear.transform, Spear.transform.position, tile.transform.position, SpearSpeed, () => tile.GetUnit().Damage(1));
+        ParticleManager.Instance.PlayParticle(tile.transform.position, tile.transform.position - transform.position, ParticleManager.Instance.AttackP);
         m_hasSpear = false;
         callback();
     }

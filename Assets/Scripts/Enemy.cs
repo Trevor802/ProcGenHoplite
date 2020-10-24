@@ -105,7 +105,7 @@ public class Enemy : Unit
             m_canSeePlayer = true;
             if (!direction.IsDiag()){
                 var dist = Vector3.Distance(GetTile().transform.position, Player.Instance.GetTile().transform.position);
-                if (Util.NrE(dist, DEF.TRW_DIST_MIN) || Util.NrE(dist, DEF.TRW_DIST_MAX)){
+                if (dist >= DEF.TRW_DIST_MIN){
                     m_canThrowPlayer = true;
                     return;
                 }
