@@ -56,7 +56,7 @@ public abstract class Unit : MonoBehaviour
         callback();
     }
 
-    protected IEnumerator Throw(Tile tile, Action callback){
+    protected virtual IEnumerator Throw(Tile tile, Action callback){
         Debug.Log($"{name} throw {tile.GetUnit().name}");
         tile.GetUnit().Damage(1);
         transform.LookAt(tile.transform.position, Vector3.up);

@@ -10,6 +10,7 @@ TagManager:
   - Door
   - Lava
   - Upgrade
+  - Spear
   layers:
   - Default
   - TransparentFX

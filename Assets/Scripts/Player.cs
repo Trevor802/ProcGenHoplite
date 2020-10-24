@@ -11,10 +11,15 @@ public class Player : Unit
     private int m_maxHealth = 3;
     private int m_maxJump = 2;
     private int m_mana;
+    public float SpearSpeed = 20f;
+    public GameObject Spear;
+    private Vector3 m_defaultSpearPos;
+    private bool m_hasSpear = true;
     protected override void Awake() {
         base.Awake();
         Instance = this;
         Restore();
+        m_defaultSpearPos = Spear.transform.localPosition;
     }
     private void Start() {
         MouseManager.Instance.OnClickTile += this.OnClickTile;
@@ -135,10 +140,44 @@ public class Player : Unit
         else if (tile.tag == "End"){
             UnitManager.Instance.ShowRestart(true);
         }
+        else if (!m_hasSpear){
+            foreach(Transform t in tile.transform){
+                if (t.gameObject.tag == "Spear"){
+                    t.parent = transform;
+                    t.localPosition = m_defaultSpearPos;
+                    t.localRotation = Quaternion.identity;
+                    m_hasSpear = true;
+                    break;
+                }
+            }
+        }
     }
+    private bool CanThrow(Tile tile){
+        var dir = tile.transform.position - transform.position;
+        var dist = dir.magnitude;
+        if (dir.IsDiag()){
+            return false;
+        }
+        if (Util.NrE(2, dist) && m_hasSpear && tile.GetUnit() is Enemy){
+            return true;
+        }
+        return false;
+    }
+    protected override IEnumerator Throw(Tile tile, Action callback)
+    {
+        Debug.Log($"{name} throw {tile.GetUnit().name}");
+        Spear.transform.parent = tile.transform;
+        yield return Move(Spear.transform, Spear.transform.position, tile.transform.position, SpearSpeed, () => tile.GetUnit().Damage(1));
+        m_hasSpear = false;
+        callback();
+    }
+
     public void OnClickTile(Tile tile){
         if (UnitManager.Instance.IsPlayerTurn){
-            if (CanPush(tile)){
+            if (CanThrow(tile)){
+                StartCoroutine(Throw(tile, UnitManager.Instance.AfterPlayerTurn));
+            }
+            else if (CanPush(tile)){
                 var dir = tile.transform.position - transform.position;
                 UseMana(3);
                 StartCoroutine(Push(tile, dir, UnitManager.Instance.AfterPlayerTurn));
