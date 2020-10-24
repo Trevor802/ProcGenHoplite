@@ -10,6 +10,7 @@ public class MouseManager : MonoBehaviour
     private UnitManager m_uManager;
     public Action<Tile> OnClickTile;
     public static MouseManager Instance {get; private set;} = null;
+    public bool Activating{get; set;} = true;
     void Awake(){
         m_uManager = FindObjectOfType<UnitManager>();
         Instance = this;
@@ -24,7 +25,7 @@ public class MouseManager : MonoBehaviour
             m_hovering = hit.collider.GetComponent<Tile>();
             m_hovering?.OnHover();
         }
-        if (Input.GetMouseButtonDown(0)){
+        if (Input.GetMouseButtonDown(0) && Activating){
             OnClickTile.Invoke(m_hovering);
         }
     }

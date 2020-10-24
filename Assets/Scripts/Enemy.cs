@@ -8,6 +8,7 @@ public class Enemy : Unit
     private Tile m_nextTile;
     private bool m_canAttackPlayer;
     private bool m_canThrowPlayer;
+    protected bool m_isArcher = false;
     private static readonly Vector3[] m_dirs = new Vector3[4]{Vector3.forward, Vector3.back, Vector3.left, Vector3.right};
     protected virtual void Awake() {
         base.Awake();
@@ -15,6 +16,7 @@ public class Enemy : Unit
         FindPlayerMask = LayerMask.GetMask("Tile", "Block");
         BlockMask = LayerMask.GetMask("Block");
         TileMask = LayerMask.GetMask("Tile");
+        m_health = 1;
     }
 
     protected override void OnEnterTile(Tile tile)
@@ -28,11 +30,11 @@ public class Enemy : Unit
     internal override void TakeAction(Action callback)
     {
         TrackPlayer();
-        if (m_canAttackPlayer){
+        if (m_canAttackPlayer && !m_isArcher){
             // attack first
             StartCoroutine(Attack(Player.Instance.GetTile(), callback));
         }
-        else if (m_canThrowPlayer){
+        else if (m_canThrowPlayer && m_isArcher){
             // throw
             StartCoroutine(Throw(Player.Instance.GetTile(), callback));
         }
@@ -43,6 +45,7 @@ public class Enemy : Unit
             Debug.Log("Random walk");
             var tile = GetAvailTile(m_dirs.ToList());
             if (tile is null){
+                Debug.Log("Nothing to do");
                 callback();
             }
             else{

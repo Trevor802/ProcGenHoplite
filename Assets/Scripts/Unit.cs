@@ -18,7 +18,7 @@ public abstract class Unit : MonoBehaviour
 
     protected abstract void Die();
 
-    public void Damage(int value){
+    public virtual void Damage(int value){
         m_health -= value;
         if (m_health <= 0){
             Die();
@@ -50,12 +50,16 @@ public abstract class Unit : MonoBehaviour
 
     protected IEnumerator Attack(Tile tile, Action callback){
         Debug.Log($"{name} attack {tile.GetUnit().name}");
+        tile.GetUnit().Damage(1);
+        transform.LookAt(tile.transform.position, Vector3.up);
         yield return null;
         callback();
     }
 
     protected IEnumerator Throw(Tile tile, Action callback){
         Debug.Log($"{name} throw {tile.GetUnit().name}");
+        tile.GetUnit().Damage(1);
+        transform.LookAt(tile.transform.position, Vector3.up);
         yield return null;
         callback();
     }

@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UnitGenerator : MonoBehaviour {
     public static UnitGenerator Instance {get; private set;}
 	public Player PlayerPrefab;
     public Enemy WarriorPrefab;
     public Enemy ArcherPrefab;
+    public Text HealthText;
+    public Text ManaText;
     private List<Room> m_rooms;
     private int m_currentRoom = 0;
     private void Awake() {
@@ -22,4 +25,5 @@ public class UnitGenerator : MonoBehaviour {
         m_rooms[m_currentRoom].GenerateUnits(m_currentRoom+1);
         m_currentRoom++;
     }
+
 }

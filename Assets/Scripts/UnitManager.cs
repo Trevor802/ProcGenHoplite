@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UnitManager : MonoBehaviour {
     public static UnitManager Instance {get; private set;} = null;
@@ -8,6 +10,9 @@ public class UnitManager : MonoBehaviour {
     private bool m_isPlayerTurn = true;
     private int m_count;
     private Player m_player;
+    public Button[] Buttons;
+    public Button WinButton;
+    public Button FailButton;
     private Player player{
         get{
             if (m_player is null){
@@ -18,7 +23,34 @@ public class UnitManager : MonoBehaviour {
     }
     private void Awake() {
         Instance = this;
+        HideButtons();
     }
+
+    public void ShowRestart(bool win){
+        if (win){
+            WinButton.gameObject.SetActive(true);
+        }
+        else{
+            FailButton.gameObject.SetActive(true);
+        }
+        MouseManager.Instance.Activating = false;
+    }
+
+    public void ShowButtons(){
+        int hideID = Random.Range(0, 4);
+        for(int i = 0; i < 4; i++){
+            Buttons[i].gameObject.SetActive(i != hideID);
+        }
+        MouseManager.Instance.Activating = false;
+    }
+
+    private void HideButtons(){
+        foreach(var b in Buttons){
+            b.gameObject.SetActive(false);
+        }
+        MouseManager.Instance.Activating = true;
+    }
+
     public void RegisterUnit(Unit unit){
         m_units.Add(unit);
     }
@@ -52,5 +84,26 @@ public class UnitManager : MonoBehaviour {
         foreach(var u in m_units){
             u.TakeAction(Callback);
         };
+    }
+
+    public void RestoreHP(){
+        Player.Instance.RestoreHP();
+        HideButtons();
+    }
+    public void IncreaseMaxHP(){
+        Player.Instance.IncreaseMaxHP();
+        HideButtons();
+    }
+    public void IncreaseMaxMana(){
+        Player.Instance.IncreaseMaxMana();
+        HideButtons();
+    }
+    public void IncreaseMaxJump(){
+        Player.Instance.IncreaseMaxJump();
+        HideButtons();
+    }
+
+    public void Restart(){
+        SceneManager.LoadScene("TheOnlyScene");
     }
 }

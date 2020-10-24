@@ -9,6 +9,7 @@ TagManager:
   - Floor
   - Door
   - Lava
+  - Upgrade
   layers:
   - Default
   - TransparentFX
