@@ -132,6 +132,9 @@ public class Player : Unit
             UnitManager.Instance.ShowButtons();
             tile.Used = true;
         }
+        else if (tile.tag == "End"){
+            UnitManager.Instance.ShowRestart(true);
+        }
     }
     public void OnClickTile(Tile tile){
         if (UnitManager.Instance.IsPlayerTurn){

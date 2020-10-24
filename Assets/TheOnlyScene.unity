@@ -357,7 +357,7 @@ MonoBehaviour:
     Tile: {fileID: 4644833093375791729, guid: bb1a16098ecc44d1fa312dd7c7086665, type: 3}
   - C: 63
     Tile: {fileID: 4644833093375791729, guid: 4ff6ea17b7b2e448dbee0a6b57b9b655, type: 3}
-  RandomSeed: 12345
+  RandomSeed: 0
   RoomsToVictory: 8
 --- !u!1 &360266453
 GameObject:
@@ -1016,7 +1016,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.7069834, y: 0, z: 0, w: 0.7072302}
-  m_LocalPosition: {x: 0, y: 8, z: -0}
+  m_LocalPosition: {x: 0, y: 10, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
