@@ -19,7 +19,11 @@ public class Player : Unit
     }
 
     private bool CanMove(Tile tile){
-        if ((transform.position - tile.transform.position).magnitude > m_mana){
+        var dir = tile.transform.position - transform.position;
+        if (dir.IsDiag()){
+            return false;
+        }
+        if ((dir).magnitude > m_mana){
             return false;
         }
         return true;

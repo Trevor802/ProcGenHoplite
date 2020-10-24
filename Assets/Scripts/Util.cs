@@ -12,7 +12,33 @@ public static class Util{
 			list[n] = value;
 		}
 	}
+	public static bool NrE(float a, float b){
+		return Mathf.Abs(a - b) < 0.001f;
+	}
 
+	public static bool IsDiag(this Vector3 vec){
+		if (vec.x != 0 && vec.z != 0){
+            return true;
+        }
+		return false;
+	}
+
+    public static List<Vector3> Split(this Vector3 vec){
+        var result = new List<Vector3>();
+		var xAbs = Mathf.Abs(vec.x);
+		var zAbs = Mathf.Abs(vec.z);
+        if (NrE(xAbs, zAbs)){
+			result.Add(new Vector3(vec.x, 0, 0));
+			result.Add(new Vector3(0, 0, vec.z));
+		}
+		else if (xAbs > zAbs){
+			result.Add(new Vector3(vec.x, 0, 0));
+		}
+		else{
+			result.Add(new Vector3(0, 0, vec.z));
+		}
+		return result;
+    }
 	// private static IEnumerator MoveFromTo(Transform objectToMove, Vector3 a, Vector3 b, float speed){
     //     float step = (speed / (a - b).magnitude) * Time.fixedDeltaTime;
     //     float t = 0;
