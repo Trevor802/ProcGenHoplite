@@ -25,10 +25,14 @@ public class UnitManager : MonoBehaviour {
     public void DeregisterUnit(Unit unit){
         m_units.Remove(unit);
     }
-    // private void BeforeCallback(){
-    //     m_isPlayerTurn = false;
-        
-    // }
+
+    public void DestroyAllUnits(){
+        for(int i = m_units.Count - 1; i >=0; i--){
+            Destroy(m_units[i].gameObject);
+        }
+        m_units.Clear();
+    }
+
     public void Callback(){
         m_count++;
         if (m_count == m_units.Count){
@@ -40,6 +44,9 @@ public class UnitManager : MonoBehaviour {
         m_isPlayerTurn = true;
     }
     public void AfterPlayerTurn(){
+        if (m_units.Count == 0){
+            return;
+        }
         m_isPlayerTurn = false;
         m_count = 0;
         foreach(var u in m_units){

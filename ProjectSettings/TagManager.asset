@@ -7,6 +7,8 @@ TagManager:
   - Start
   - End
   - Floor
+  - Door
+  - Lava
   layers:
   - Default
   - TransparentFX

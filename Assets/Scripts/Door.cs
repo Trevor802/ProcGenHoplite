@@ -7,6 +7,7 @@ public class Door : MonoBehaviour
     public GameObject Mesh;
     public Orientation Orientation;
     public bool Connected = false;
+    public bool IsExit = false;
     public void Orient(Orientation orientation){
         Orientation = orientation;
         var q = Quaternion.identity;

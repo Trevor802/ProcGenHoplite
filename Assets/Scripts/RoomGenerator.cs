@@ -76,6 +76,7 @@ public class RoomGenerator : MonoBehaviour
 		if (!first){
 			var door = m_doors.Pop();
 			door.Connected = true;
+			door.IsExit = true;
 			o = door.Orientation;
 			if (m_count == RoomsToVictory - 1){
 				room = m_oRooms[1];

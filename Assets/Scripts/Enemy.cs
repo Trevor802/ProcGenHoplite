@@ -17,26 +17,37 @@ public class Enemy : Unit
         TileMask = LayerMask.GetMask("Tile");
     }
 
+    protected override void OnEnterTile(Tile tile)
+    {
+        base.OnEnterTile(tile);
+        if (tile.tag == "Door"){
+            Die();
+        }
+    }
+
     internal override void TakeAction(Action callback)
     {
         TrackPlayer();
         if (m_canAttackPlayer){
             // attack first
-            Debug.Log("Attack");
-            callback();
+            StartCoroutine(Attack(Player.Instance.GetTile(), callback));
         }
         else if (m_canThrowPlayer){
             // throw
-            Debug.Log("Throw");
-            callback();
+            StartCoroutine(Throw(Player.Instance.GetTile(), callback));
         }
-        else if (m_canSeePlayer){
+        else if (m_canSeePlayer && m_nextTile != null){
             StartCoroutine(Move(transform, transform.position, m_nextTile.transform.position, MoveSpeed, callback));
         }
         else{
             Debug.Log("Random walk");
             var tile = GetAvailTile(m_dirs.ToList());
-            StartCoroutine(Move(transform, transform.position, tile.transform.position, MoveSpeed, callback));
+            if (tile is null){
+                callback();
+            }
+            else{
+                StartCoroutine(Move(transform, transform.position, tile.transform.position, MoveSpeed, callback));
+            }
         }
     }
 
@@ -48,7 +59,7 @@ public class Enemy : Unit
                 return tile;
             }
         }
-        throw new InvalidOperationException();
+        return null;
     }
 
     protected Tile TryMoveDir(Vector3 dir){
@@ -61,7 +72,14 @@ public class Enemy : Unit
                 return null;
             }
             else if (TileMask == (TileMask | 1 << hit.transform.gameObject.layer)){
-                return hit.transform.GetComponent<Tile>();
+                var tile = hit.transform.GetComponent<Tile>();
+                if (tile.GetUnit() != null){
+                    return null;
+                }
+                if (tile.tag == "Door" || tile.tag == "Lava"){
+                    return null;
+                }
+                return tile;
             }
         }
         return null;
@@ -83,16 +101,25 @@ public class Enemy : Unit
         else{
             m_canSeePlayer = true;
             if (!direction.IsDiag()){
-                var dist = Vector3.Distance(In().transform.position, Player.Instance.In().transform.position);
-                if (Util.NrE(dist, 2)){
+                var dist = Vector3.Distance(GetTile().transform.position, Player.Instance.GetTile().transform.position);
+                if (Util.NrE(dist, DEF.TRW_DIST_MIN) || Util.NrE(dist, DEF.TRW_DIST_MAX)){
                     m_canThrowPlayer = true;
+                    return;
                 }
-                else if (Util.NrE(dist, 1)){
+                else if (Util.NrE(dist, DEF.ATK_DIST)){
                     m_canAttackPlayer = true;
+                    return;
                 }
             }
             var dirs = direction.Split();
             m_nextTile = GetAvailTile(dirs);
         }
+    }
+
+    protected override void Die()
+    {
+        Debug.Log($"{name} die");
+        UnitManager.Instance.DeregisterUnit(this);
+        Destroy(gameObject);
     }
 }

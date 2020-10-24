@@ -27,26 +27,21 @@ public static class Util{
         var result = new List<Vector3>();
 		var xAbs = Mathf.Abs(vec.x);
 		var zAbs = Mathf.Abs(vec.z);
-        if (NrE(xAbs, zAbs)){
-			result.Add(new Vector3(vec.x, 0, 0));
-			result.Add(new Vector3(0, 0, vec.z));
-		}
-		else if (xAbs > zAbs){
+		if (xAbs > 0){
 			result.Add(new Vector3(vec.x, 0, 0));
 		}
-		else{
+		if (zAbs > 0){
 			result.Add(new Vector3(0, 0, vec.z));
 		}
 		return result;
     }
-	// private static IEnumerator MoveFromTo(Transform objectToMove, Vector3 a, Vector3 b, float speed){
-    //     float step = (speed / (a - b).magnitude) * Time.fixedDeltaTime;
-    //     float t = 0;
-    //     while (t <= 1.0f) {
-    //         t += step; // Goes from 0 to 1, incrementing by step each time
-    //         objectToMove.position = Vector3.Lerp(a, b, t); // Move objectToMove closer to b
-    //         yield return new WaitForFixedUpdate();         // Leave the routine and return here in the next frame
-    //     }
-    //     objectToMove.position = b;
-    // }
+	
+	public static Tile GetTile(Vector3 pos){
+		var allTile = LayerMask.GetMask("Tile", "Block");
+		RaycastHit hit;
+		if (Physics.Linecast(pos + Vector3.up, pos, out hit, allTile)){
+			return hit.transform.GetComponent<Tile>();
+		}
+		return null;
+	}
 }
